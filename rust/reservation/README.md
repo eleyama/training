@@ -46,7 +46,7 @@ cargo run -p reservation-server
 
 ## 公開（Render）
 
-リポジトリ直下の `render.yaml` で設定する。mainへのpushで自動的に公開される。
+リポジトリ直下の `render.yaml` で設定する。mainへのpushでGitHub Actionsの検査が成功すると、自動的に公開される。
 
 無料枠ではファイルが残らないため、再起動や再公開で予約は消える。画面にも、練習用のデモであることと、本名を入力しないことを表示している。
 

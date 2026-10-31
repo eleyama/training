@@ -8,6 +8,8 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /
+    # GitHub Actionsの検査が成功したときだけ公開する
+    autoDeployTrigger: checksPass
     envVars:
       # 送信元をプロキシのヘッダーから取る
       - key: TRUST_PROXY
