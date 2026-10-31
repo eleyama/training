@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>クリニック予約</title>
+<title>クリニック予約（練習用のデモ）</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<h1>クリニック予約</h1>
-<p>日付と時間を選び、お名前を入力してください。1つの枠は{{ capacity }}名までです。</p>
+<h1>クリニック予約（練習用のデモ）</h1>
+<p class="demo-notice">Rustの練習用のデモです。実在のクリニックではなく、実際の予約はできません。<strong>本名や個人情報は入力しないでください。</strong>入力した内容は取り消せませんが、サーバーの再起動で消えることがあります。</p>
+<p>日付と時間を選び、仮の名前を入力してください。1つの枠は{{ capacity }}名までです。</p>
 
 {% for month in months %}
 <h2>{{ month.label }}</h2>
@@ -62,7 +63,7 @@
     {% endif %}
     {% endfor %}
   </fieldset>
-  <label class="name">お名前 <input name="name" maxlength="{{ max_name_chars }}" required></label>
+  <label class="name">仮の名前 <input name="name" maxlength="{{ max_name_chars }}" required></label>
   <button>予約する</button>
 </form>
 {% else %}

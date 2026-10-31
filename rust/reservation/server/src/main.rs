@@ -436,6 +436,21 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn 画面に練習用のデモだと表示する() {
+        let res = test_app(5)
+            .oneshot(Request::get("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        let body = axum::body::to_bytes(res.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let html = String::from_utf8(body.to_vec()).unwrap();
+        assert!(html.contains("実在のクリニックではなく"));
+        assert!(html.contains("本名や個人情報は入力しないでください"));
+    }
+
+    #[tokio::test]
     async fn 同じサイトからの予約は受け付ける() {
         let res = test_app(5)
             .oneshot(reserve_request("16:00", "same-origin"))

@@ -44,6 +44,17 @@ cargo run -p reservation-server
 
 予約は起動したフォルダの `reservations.db`（SQLite）に保存され、停止しても残る。保存先は環境変数 `DATABASE_PATH` で変えられる。予約を全部消すときは、停止してからこのファイルを削除する。
 
+## 公開（Render）
+
+リポジトリ直下の `render.yaml` で設定する。mainへのpushで自動的に公開される。
+
+無料枠ではファイルが残らないため、再起動や再公開で予約は消える。画面にも、練習用のデモであることと、本名を入力しないことを表示している。
+
+```powershell
+docker build -t reservation-demo .
+docker run --rm -p 3000:10000 reservation-demo
+```
+
 ## テストの実行
 
 ```powershell
@@ -64,7 +75,7 @@ cargo audit        # 既知の脆弱性を調べる
 cargo deny check   # deny.toml のルール（脆弱性・ライセンス・取得元）を調べる
 ```
 
-`Cargo.lock` を変えたときと、公開前に実行する。新しい脆弱性は依存を変えなくても見つかるので、定期的にも実行する。
+GitHub Actions でも、pushのたびと週に1回、`cargo deny check` を実行する（`.github/workflows/reservation.yml`）。
 
 ## 進め方
 

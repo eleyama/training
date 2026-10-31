@@ -1,5 +1,6 @@
 body { font-family: sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 16px; color: #20252b; }
 h2 { font-size: 1.2rem; margin-top: 2rem; }
+.demo-notice { padding: 8px 12px; border: 1px solid #d9a300; background: #fff8e1; }
 .calendar { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .calendar th, .calendar td { border: 1px solid #ccd; text-align: center; padding: 0; height: 4rem; vertical-align: top; }
 .calendar th { height: auto; padding: 4px; background: #f4f6f8; }

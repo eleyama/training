@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: reservation-demo
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: rust/reservation
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      # 送信元をプロキシのヘッダーから取る
+      - key: TRUST_PROXY
+        value: "1"

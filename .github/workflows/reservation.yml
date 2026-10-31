@@ -1,0 +1,30 @@
+name: Reservation checks
+on:
+  push:
+    branches: [main]
+    paths: ["rust/reservation/**", ".github/workflows/reservation.yml"]
+  pull_request:
+    paths: ["rust/reservation/**", ".github/workflows/reservation.yml"]
+  # 新しい脆弱性は依存を変えなくても見つかるので、週に1回調べる
+  schedule:
+    - cron: "0 0 * * 1"
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: rust/reservation
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: rustup update stable --no-self-update && rustup default stable
+      - run: rustup component add rustfmt clippy
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo install cargo-deny --locked
+      - run: cargo deny check
