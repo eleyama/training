@@ -65,7 +65,7 @@ fn is_cross_site(headers: &HeaderMap) -> bool {
 pub struct RateLimiter {
     max: usize,
     window: Duration,
-    /// Render などのプロキシの後ろで動くとき true。送信元を X-Forwarded-For から取る
+    /// Render（前段が Cloudflare）で動くとき true。送信元を CF-Connecting-IP から取る
     trust_proxy: bool,
     hits: Mutex<HashMap<IpAddr, Vec<Instant>>>,
 }
@@ -100,15 +100,14 @@ impl RateLimiter {
     /// 送信元のIPアドレス
     fn client_ip(&self, req: &Request) -> Option<IpAddr> {
         if self.trust_proxy {
-            // 右端の値は、プロキシが付けたもの。左側は送信者が偽れるので使わない
-            let forwarded = req
+            // X-Forwarded-For は使わない。右端は Cloudflare のIPで、リクエストごとに変わる
+            let connecting = req
                 .headers()
-                .get("x-forwarded-for")
+                .get("cf-connecting-ip")
                 .and_then(|v| v.to_str().ok())
-                .and_then(|v| v.rsplit(',').next())
                 .and_then(|v| v.trim().parse().ok());
-            if forwarded.is_some() {
-                return forwarded;
+            if connecting.is_some() {
+                return connecting;
             }
         }
         req.extensions()
@@ -169,6 +168,33 @@ mod tests {
             ("origin", "https://evil.example"),
             ("host", "127.0.0.1:3000"),
         ])));
+    }
+
+    fn request_with_ip_headers() -> Request {
+        let mut req = Request::new(axum::body::Body::empty());
+        req.headers_mut()
+            .insert("cf-connecting-ip", HeaderValue::from_static("203.0.113.10"));
+        req.headers_mut().insert(
+            "x-forwarded-for",
+            HeaderValue::from_static("198.51.100.1, 203.0.113.10, 104.16.0.1"),
+        );
+        req.extensions_mut()
+            .insert(ConnectInfo(SocketAddr::from(([192, 0, 2, 9], 1234))));
+        req
+    }
+
+    #[test]
+    fn プロキシの後ろでは送信元をcf_connecting_ipから取る() {
+        let limiter = RateLimiter::new(1, Duration::from_secs(1), true);
+        let ip = limiter.client_ip(&request_with_ip_headers());
+        assert_eq!(ip, Some(IpAddr::from([203, 0, 113, 10])));
+    }
+
+    #[test]
+    fn プロキシを使わないときはヘッダーを信用しない() {
+        let limiter = RateLimiter::new(1, Duration::from_secs(1), false);
+        let ip = limiter.client_ip(&request_with_ip_headers());
+        assert_eq!(ip, Some(IpAddr::from([192, 0, 2, 9])));
     }
 
     #[test]
