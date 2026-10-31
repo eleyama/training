@@ -1,0 +1,6 @@
+# Rustのビルド結果
+target/
+
+# ローカルのデータベース
+*.db
+*.db-journal

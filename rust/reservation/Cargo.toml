@@ -1,0 +1,5 @@
+# ワークスペース：複数のクレート（パッケージ）をまとめて管理する
+# 今後 server（axum + SQLite、Render用）と worker（Cloudflare用）を追加する
+[workspace]
+members = ["core", "server"]
+resolver = "3"

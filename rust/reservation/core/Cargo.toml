@@ -1,0 +1,9 @@
+[package]
+# Rust標準の `core` クレートと名前が衝突するため、パッケージ名は reservation-core にする
+name = "reservation-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+chrono = { version = "0.4.45", default-features = false, features = ["std"] }

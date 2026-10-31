@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クリニック予約</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<h1>クリニック予約</h1>
+<p>日付と時間を選び、お名前を入力してください。1つの枠は{{ capacity }}名までです。</p>
+
+{% for month in months %}
+<h2>{{ month.label }}</h2>
+<table class="calendar">
+<thead><tr>{% for w in crate::WEEKDAYS %}<th>{{ w }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for week in month.weeks %}
+<tr>
+  {% for cell in week %}
+  {% match cell %}
+  {% when Some(cell) %}
+  <td class="{% if cell.selected %}selected{% endif %}">
+    {% match cell.status %}
+    {% when DayStatus::Open(remaining) %}
+    <a class="open" href="/?date={{ cell.date }}#day">{{ cell.date.day() }}<small>残り{{ remaining }}</small></a>
+    {% when DayStatus::Full %}
+    <a class="full" href="/?date={{ cell.date }}#day">{{ cell.date.day() }}<small>満</small></a>
+    {% when DayStatus::Closed %}
+    <span class="closed">{{ cell.date.day() }}<small>休診</small></span>
+    {% when DayStatus::Past %}
+    <span class="past">{{ cell.date.day() }}</span>
+    {% endmatch %}
+  </td>
+  {% when None %}
+  <td></td>
+  {% endmatch %}
+  {% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endfor %}
+
+{% if let Some(day) = day %}
+{# id="day"：URLの末尾の #day で、読み込み後にここへ移動する #}
+<div class="day-head" id="day">
+  <h2>{{ day.label }}</h2>
+  {% if let Some(message) = error %}<p class="error">登録できませんでした。{{ message }}</p>{% endif %}
+  {% if let Some(message) = notice %}<p class="notice">{{ message }}</p>{% endif %}
+</div>
+{% if day.bookable %}
+<form method="post" action="/reserve#day">
+  <input type="hidden" name="date" value="{{ day.date }}">
+  <fieldset>
+    <legend>時間</legend>
+    {% for slot in day.slots %}
+    {% if slot.remaining > 0 %}
+    <label class="slot"><input type="radio" name="time" value="{{ slot.time }}" required> {{ slot.time }}　残り{{ slot.remaining }}/{{ capacity }}</label>
+    {% else %}
+    <label class="slot disabled"><input type="radio" name="time" value="{{ slot.time }}" disabled> {{ slot.time }}　満</label>
+    {% endif %}
+    {% endfor %}
+  </fieldset>
+  <label class="name">お名前 <input name="name" maxlength="{{ max_name_chars }}" required></label>
+  <button>予約する</button>
+</form>
+{% else %}
+<p>この日は予約できません。</p>
+{% endif %}
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+body { font-family: sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 16px; color: #20252b; }
+h2 { font-size: 1.2rem; margin-top: 2rem; }
+.calendar { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.calendar th, .calendar td { border: 1px solid #ccd; text-align: center; padding: 0; height: 4rem; vertical-align: top; }
+.calendar th { height: auto; padding: 4px; background: #f4f6f8; }
+.calendar th:first-child { color: #b00020; }
+.calendar a, .calendar span { display: block; box-sizing: border-box; min-height: 4rem; padding: 4px; text-decoration: none; color: inherit; }
+.calendar a:hover { background: #eef4ff; }
+.calendar small { display: block; font-size: 0.75rem; margin-top: 4px; }
+.open small { color: #1a6b3a; }
+.full small, .closed small { color: #b00020; }
+.past { color: #99a; background: #f8f8fa; }
+.selected { outline: 3px solid #2b5fd9; outline-offset: -3px; }
+fieldset { border: 1px solid #ccd; padding: 8px 12px; }
+.slot { display: block; padding: 6px 0; }
+.slot.disabled { color: #99a; }
+.name { display: block; margin: 12px 0; }
+input[name="name"] { padding: 6px; min-width: 12em; }
+button { padding: 8px 16px; }
+.day-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin: 2rem 0 12px; }
+.day-head h2, .day-head p { margin: 0; }
+.error { color: #b00020; font-weight: bold; }
+.notice { color: #1a6b3a; font-weight: bold; }

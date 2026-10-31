@@ -1,0 +1,32 @@
+# 依存ライブラリの検査ルール。`cargo deny check` で確認する
+
+[graph]
+# Linux（Render）と Windows（ローカル開発）で使うものだけを検査する
+targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+
+# 脆弱性・保守終了の情報
+[advisories]
+ignore = [
+    # askama がテンプレートをコンパイルするときだけ使い、サーバーの実行時には動かない
+    # 脆弱性ではなく保守終了の通知のため、askama が置き換えるまで許可する
+    { id = "RUSTSEC-2026-0374", reason = "コンパイル時のみ使用。askama の対応待ち" },
+]
+
+# 使ってよいライセンス
+[licenses]
+allow = ["MIT", "Apache-2.0", "BSD-3-Clause", "Zlib", "Unicode-3.0"]
+# publish = false の自作クレートは検査しない
+private = { ignore = true }
+
+# 使ってはいけない依存
+[bans]
+# バージョン指定が「*」の依存は、意図しない版が入るので禁止
+wildcards = "deny"
+allow-wildcard-paths = true
+# 同じライブラリの複数バージョンは、確認のため警告だけ出す
+multiple-versions = "warn"
+
+# 取得元はcrates.ioだけに限る
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
